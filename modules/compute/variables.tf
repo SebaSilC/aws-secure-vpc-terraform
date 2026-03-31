@@ -1,6 +1,12 @@
-############################################
-# Compute Module Variables
-############################################
+variable "project" {
+  description = "Project identifier used for resource naming"
+  type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+}
 
 variable "vpc_id" {
   description = "VPC ID where resources will be deployed"
@@ -17,8 +23,8 @@ variable "private_subnet_id" {
   type        = string
 }
 
-variable "admin_ip" {
-  description = "Admin IP allowed to SSH into bastion (format x.x.x.x/32)"
+variable "allowed_ssh_cidr" {
+  description = "CIDR block allowed to access bastion host via SSH"
   type        = string
 }
 
@@ -31,4 +37,3 @@ variable "common_tags" {
   description = "Common tags applied to resources"
   type        = map(string)
 }
-
