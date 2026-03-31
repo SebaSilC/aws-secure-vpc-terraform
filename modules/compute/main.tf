@@ -1,3 +1,7 @@
+locals {
+  name_prefix = "${var.project}-${var.environment}"
+}
+
 ############################################
 # AMI Lookup
 ############################################
@@ -16,9 +20,10 @@ resource "tls_private_key" "bastion" {
 }
 
 resource "aws_key_pair" "bastion" {
-  key_name   = "lab-bastion-key"
+  key_name   = "${local.name_prefix}-bastion-key"
   public_key = tls_private_key.bastion.public_key_openssh
-  tags       = var.common_tags
+
+  tags = var.common_tags
 }
 
 ############################################
@@ -26,17 +31,19 @@ resource "aws_key_pair" "bastion" {
 ############################################
 
 resource "aws_security_group" "bastion" {
-  name   = "lab-bastion-sg"
+  name   = "${local.name_prefix}-bastion-sg"
   vpc_id = var.vpc_id
 
   ingress {
+    description = "SSH access from allowed CIDR"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.admin_ip]
+    cidr_blocks = [var.allowed_ssh_cidr]
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -44,15 +51,16 @@ resource "aws_security_group" "bastion" {
   }
 
   tags = merge(var.common_tags, {
-    Name = "lab-bastion-sg"
+    Name = "${local.name_prefix}-bastion-sg"
   })
 }
 
 resource "aws_security_group" "private" {
-  name   = "lab-private-sg"
+  name   = "${local.name_prefix}-private-sg"
   vpc_id = var.vpc_id
 
   ingress {
+    description     = "SSH from bastion host"
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
@@ -60,6 +68,7 @@ resource "aws_security_group" "private" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -67,7 +76,7 @@ resource "aws_security_group" "private" {
   }
 
   tags = merge(var.common_tags, {
-    Name = "lab-private-sg"
+    Name = "${local.name_prefix}-private-sg"
   })
 }
 
@@ -84,7 +93,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
 
   tags = merge(var.common_tags, {
-    Name = "lab-bastion"
+    Name = "${local.name_prefix}-bastion"
   })
 }
 
@@ -97,7 +106,6 @@ resource "aws_instance" "app" {
   associate_public_ip_address = false
 
   tags = merge(var.common_tags, {
-    Name = "lab-app"
+    Name = "${local.name_prefix}-app"
   })
 }
-
