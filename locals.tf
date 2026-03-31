@@ -1,8 +1,9 @@
 locals {
+  name_prefix = "${var.project}-${var.environment}"
+
   common_tags = {
-    Project     = "secure-vpc"
-    Environment = "lab"
-    Owner       = "Sebastian"
-    ManagedBy   = "Terraform"
+    Project     = var.project
+    Environment = var.environment
+    ManagedBy   = "terraform"
   }
 }
