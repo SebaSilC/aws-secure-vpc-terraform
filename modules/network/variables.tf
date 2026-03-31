@@ -1,6 +1,12 @@
-############################################
-# Network Module Variables
-############################################
+variable "project" {
+  description = "Project identifier used for resource naming"
+  type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
+}
 
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
@@ -26,4 +32,3 @@ variable "common_tags" {
   description = "Common tags applied to all resources"
   type        = map(string)
 }
-
